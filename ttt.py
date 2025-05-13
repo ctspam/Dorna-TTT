@@ -4,16 +4,17 @@ import time
 
 first_move_done = False  # Flag to track if Robot 1 has made the center move
 second_move_done = False  # Flag to track if Robot 2 has made the corner move
+player_X_turn = True
 
 def play_X(player):
     global first_move_done, second_move_done
+    x_button.config(state="disabled")
 
     # First move: Robot 1 (X) always in the center
-    if not first_move_done and player == "X":
+    if not first_move_done:
         if buttons[1][1]["text"] == "":
             buttons[1][1]["text"] = "X"
             first_move_done = True
-            # play_O("O")
             root.after(500, lambda: play_O("O"))  # Delay O's move by 500ms
             return
 
@@ -28,13 +29,13 @@ def play_X(player):
     #         return
 
     # All other moves: fill the next empty spot
-    for r in range(3):
-        for c in range(3):
-            if buttons[r][c]["text"] == "":
-                buttons[r][c]["text"] = player
-                # play_O("O")
-                root.after(500, lambda: play_O("O"))  # Delay O's move by 500ms
-                return  # Only one move per click
+    else:
+        for r in range(3):
+            for c in range(3):
+                if buttons[r][c]["text"] == "":
+                    buttons[r][c]["text"] = player
+                    root.after(500, lambda: play_O("O"))  # Delay O's move by 500ms
+                    return  # Only one move per click
 
 # Random Moves            
 def play_O(player):
@@ -53,12 +54,15 @@ def play_O(player):
         # available_corners = [pos for pos in corners if buttons[pos[0]][pos[1]]["text"] == ""]
     # if player == "O":
     # time.sleep(0.5)
+    # o_button.flash()
+    # o_button.config(state="enabled")
     available_moves = [(r, c) for r in range(3) for c in range(3) if buttons[r][c]["text"] == ""]
 
     if available_moves:
         r, c = random.choice(available_moves)
         buttons[r][c]["text"] = "O"
         # second_move_done = True
+        x_button.config(state="normal")
         return
 
     # # All other moves: fill the next empty spot
@@ -86,6 +90,7 @@ x_button.grid(row=3, column=0)
 
 o_button = tk.Button(root, text="Robot 2", font=("Helvetica", 16), command=lambda: play_O("O"))
 o_button.grid(row=3, column=2)
+o_button.config(state="disabled")
 
 # Spacer
 tk.Label(root, text=" ").grid(row=3, column=1)
