@@ -1,98 +1,99 @@
 import tkinter as tk
+from tkinter import messagebox
 import random
-import time
 
-first_move_done = False  # Flag to track if Robot 1 has made the center move
-second_move_done = False  # Flag to track if Robot 2 has made the corner move
+first_move_done = False
+second_move_done = False
 player_X_turn = True
 
 def play_X(player):
+    status_label.config(text="X's Turn", bg='orange')
     global first_move_done, second_move_done
     x_button.config(state="disabled")
 
-    # First move: Robot 1 (X) always in the center
     if not first_move_done:
         if buttons[1][1]["text"] == "":
             buttons[1][1]["text"] = "X"
             first_move_done = True
-            root.after(500, lambda: play_O("O"))  # Delay O's move by 500ms
+            if check_game_over():
+                return
+            root.after(500, lambda: play_O("O"))
             return
 
-    # # Second move: Robot 2 (O) in a random corner
-    # if first_move_done and not second_move_done and player == "O":
-    #     corners = [(0,0), (0,2), (2,0), (2,2)]
-    #     available_corners = [pos for pos in corners if buttons[pos[0]][pos[1]]["text"] == ""]
-    #     if available_corners:
-    #         r, c = random.choice(available_corners)
-    #         buttons[r][c]["text"] = "O"
-    #         second_move_done = True
-    #         return
-
-    # All other moves: fill the next empty spot
     else:
         for r in range(3):
             for c in range(3):
                 if buttons[r][c]["text"] == "":
                     buttons[r][c]["text"] = player
-                    root.after(500, lambda: play_O("O"))  # Delay O's move by 500ms
-                    return  # Only one move per click
+                    if check_game_over():
+                        return
+                    root.after(500, lambda: play_O("O"))
+                    return
 
-# Random Moves            
 def play_O(player):
-    # global first_move_done, second_move_done
-
-    # # First move: Robot 1 (X) always in the center
-    # if not first_move_done and player == "X":
-    #     if buttons[1][1]["text"] == "":
-    #         buttons[1][1]["text"] = "X"
-    #         first_move_done = True
-    #         return
-
-    # Second move: Robot 2 (O) in a random corner
-    # if first_move_done and not second_move_done and player == "O":
-        # corners = [(0,0), (0,2), (2,0), (2,2)]
-        # available_corners = [pos for pos in corners if buttons[pos[0]][pos[1]]["text"] == ""]
-    # if player == "O":
-    # time.sleep(0.5)
-    # o_button.flash()
-    # o_button.config(state="enabled")
+    status_label.config(text="O's Turn", bg='red')
     available_moves = [(r, c) for r in range(3) for c in range(3) if buttons[r][c]["text"] == ""]
 
     if available_moves:
         r, c = random.choice(available_moves)
         buttons[r][c]["text"] = "O"
-        # second_move_done = True
-        x_button.config(state="normal")
-        return
+        if not check_game_over():
+            x_button.config(state="normal")
 
-    # # All other moves: fill the next empty spot
-    # for r in range(3):
-    #     for c in range(3):
-    #         if buttons[r][c]["text"] == "":
-    #             buttons[r][c]["text"] = player
-    #             return  # Only one move per click
+def check_game_over():
+    for i in range(3):
+        if buttons[i][0]["text"] != "" and buttons[i][0]["text"] == buttons[i][1]["text"] == buttons[i][2]["text"]:
+            end_game(f"Player {buttons[i][0]['text']} wins!")
+            return True
+        if buttons[0][i]["text"] != "" and buttons[0][i]["text"] == buttons[1][i]["text"] == buttons[2][i]["text"]:
+            end_game(f"Player {buttons[0][i]['text']} wins!")
+            return True
 
-# ------ Game GUI ----
-# Create window
+    if buttons[0][0]["text"] != "" and buttons[0][0]["text"] == buttons[1][1]["text"] == buttons[2][2]["text"]:
+        end_game(f"Player {buttons[0][0]['text']} wins!")
+        return True
+    if buttons[0][2]["text"] != "" and buttons[0][2]["text"] == buttons[1][1]["text"] == buttons[2][0]["text"]:
+        end_game(f"Player {buttons[0][2]['text']} wins!")
+        return True
+
+    if all(buttons[r][c]["text"] != "" for r in range(3) for c in range(3)):
+        end_game("It's a draw!")
+        return True
+
+    return False
+
+def end_game(message):
+    messagebox.showinfo("Game Over", message)
+    status_label.config(text="Game Over", bg='yellow')
+    for r in range(3):
+        for c in range(3):
+            buttons[r][c].config(state="disabled")
+    x_button.config(state="disabled")
+    o_button.config(state="disabled")
+
+# ---- GUI Setup ----
 root = tk.Tk()
 root.title("TTT Algorithm")
 
-# 3x3 Grid
+# Status label (single instance!)
+status_label = tk.Label(root, text="Welcome to Tic Tac Toe", bg='lightgreen', font=("Helvetica", 14))
+status_label.grid(row=0, column=0, columnspan=3, pady=(10, 2))
+
+# Game grid (3x3)
 buttons = [[None for _ in range(3)] for _ in range(3)]
 for r in range(3):
     for c in range(3):
         buttons[r][c] = tk.Button(root, text="", font=("Helvetica", 32), width=5, height=2)
-        buttons[r][c].grid(row=r, column=c)
+        buttons[r][c].grid(row=r + 1, column=c)
 
 # Control buttons
 x_button = tk.Button(root, text="Robot 1", font=("Helvetica", 16), command=lambda: play_X("X"))
-x_button.grid(row=3, column=0)
+x_button.grid(row=4, column=0)
+
+tk.Label(root, text=" ").grid(row=4, column=1)  # spacer
 
 o_button = tk.Button(root, text="Robot 2", font=("Helvetica", 16), command=lambda: play_O("O"))
-o_button.grid(row=3, column=2)
+o_button.grid(row=4, column=2)
 o_button.config(state="disabled")
-
-# Spacer
-tk.Label(root, text=" ").grid(row=3, column=1)
 
 root.mainloop()
