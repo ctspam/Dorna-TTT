@@ -18,6 +18,7 @@ def play_X(player):
             if check_game_over():
                 return
             root.after(500, lambda: play_O("O"))
+
             return
 
     else:
@@ -28,11 +29,14 @@ def play_X(player):
                     if check_game_over():
                         return
                     root.after(500, lambda: play_O("O"))
+                    o_button.config(state="normal")
+
                     return
 
 def play_O(player):
     status_label.config(text="O's Turn", bg='red')
     available_moves = [(r, c) for r in range(3) for c in range(3) if buttons[r][c]["text"] == ""]
+    o_button.config(state="disabled")
 
     if available_moves:
         r, c = random.choice(available_moves)
@@ -94,6 +98,6 @@ tk.Label(root, text=" ").grid(row=4, column=1)  # spacer
 
 o_button = tk.Button(root, text="Robot 2", font=("Helvetica", 16), command=lambda: play_O("O"))
 o_button.grid(row=4, column=2)
-o_button.config(state="disabled")
+# o_button.config(state="disabled")
 
 root.mainloop()
