@@ -1,0 +1,209 @@
+import time
+from dorna2 import Dorna
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+def main(robot):
+    #movement(7)
+    turn = True #master
+    while True:
+        if (robot.get_all_input()[0:4] != [0,0,0,0]):
+            turn = True
+        if (turn):
+            robot2 = recieve()
+            print(robot2)
+            #algorithm
+            #movement(best position)
+            turn = False
+            robot.set_output(index=0, val=0)
+            robot.set_output(index=1, val=0)
+            robot.set_output(index=2, val=0)
+            robot.set_output(index=3, val=0)
+        else:
+            print("wait")
+            robot.sleep(val=1)
+        break
+
+def recieve():
+    list = robot.get_all_input()[0:4]
+    print("list: " , list)
+    move1 = [0,0,0,1]
+    move2 = [0,0,1,0]
+    move3 = [0,0,1,1]
+    move4 = [0,1,0,0]
+    move5 = [0,1,0,1]
+    move6 = [0,1,1,0]
+    move7 = [0,1,1,1]
+    move8 = [1,0,0,0]
+    move9 = [1,0,0,1]
+
+    if (list == move1):
+    	return 1
+    elif (list == move2):
+    	return 2
+    elif (list == move3):
+    	return 3
+    elif (list == move4):
+    	return 4
+    elif (list == move5):
+    	return 5
+    elif (list == move6):
+    	return 6
+    elif (list == move7):
+    	return 7
+    elif (list == move8):
+    	return 8
+    elif (list == move9):
+    	return 9
+def movement(move):
+    if (move == 1):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=0)
+        robot.set_output(index=2, val=0)
+        robot.set_output(index=3, val=1)
+    elif (move == 2):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=0)
+        robot.set_output(index=2, val=1)
+        robot.set_output(index=3, val=0)
+    elif (move == 3):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=0)
+        robot.set_output(index=2, val=1)
+        robot.set_output(index=3, val=1)
+    elif (move == 4):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=1)
+        robot.set_output(index=2, val=0)
+        robot.set_output(index=3, val=0)
+    elif (move == 5):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=1)
+        robot.set_output(index=2, val=0)
+        robot.set_output(index=3, val=1)
+    elif (move == 6):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=1)
+        robot.set_output(index=2, val=1)
+        robot.set_output(index=3, val=0)
+    elif (move == 7):
+        robot.set_output(index=0, val=0)
+        robot.set_output(index=1, val=1)
+        robot.set_output(index=2, val=1)
+        robot.set_output(index=0, val=1)
+    elif (move == 8):
+    	robot.set_output(index=0, val=1)
+    	robot.set_output(index=1, val=0)
+    	robot.set_output(index=2, val=0)
+    	robot.set_output(index=3, val=0)
+    elif (move == 9):
+    	robot.set_output(index=0, val=1)
+    	robot.set_output(index=1, val=0)
+    	robot.set_output(index=2, val=0)
+    	robot.set_output(index=3, val=1)
+        
+first_move_done = False
+second_move_done = False
+player_X_turn = True
+
+def play_X(player):
+    status_label.config(text="X's Turn", bg='orange')
+    global first_move_done, second_move_done
+    x_button.config(state="disabled")
+
+    if not first_move_done:
+        if buttons[1][1]["text"] == "":
+            buttons[1][1]["text"] = "X"
+            first_move_done = True
+            if check_game_over():
+                return
+            root.after(500, lambda: play_O("O"))
+
+            return
+
+    else:
+        for r in range(3):
+            for c in range(3):
+                if buttons[r][c]["text"] == "":
+                    buttons[r][c]["text"] = player
+                    if check_game_over():
+                        return
+                    root.after(500, lambda: play_O("O"))
+                    o_button.config(state="normal")
+
+                    return
+
+def play_O(player):
+    status_label.config(text="O's Turn", bg='red')
+    available_moves = [(r, c) for r in range(3) for c in range(3) if buttons[r][c]["text"] == ""]
+    o_button.config(state="disabled")
+
+    if available_moves:
+        r, c = random.choice(available_moves)
+        buttons[r][c]["text"] = "O"
+        if not check_game_over():
+            x_button.config(state="normal")
+
+def check_game_over():
+    for i in range(3):
+        if buttons[i][0]["text"] != "" and buttons[i][0]["text"] == buttons[i][1]["text"] == buttons[i][2]["text"]:
+            end_game(f"Player {buttons[i][0]['text']} wins!")
+            return True
+        if buttons[0][i]["text"] != "" and buttons[0][i]["text"] == buttons[1][i]["text"] == buttons[2][i]["text"]:
+            end_game(f"Player {buttons[0][i]['text']} wins!")
+            return True
+
+    if buttons[0][0]["text"] != "" and buttons[0][0]["text"] == buttons[1][1]["text"] == buttons[2][2]["text"]:
+        end_game(f"Player {buttons[0][0]['text']} wins!")
+        return True
+    if buttons[0][2]["text"] != "" and buttons[0][2]["text"] == buttons[1][1]["text"] == buttons[2][0]["text"]:
+        end_game(f"Player {buttons[0][2]['text']} wins!")
+        return True
+
+    if all(buttons[r][c]["text"] != "" for r in range(3) for c in range(3)):
+        end_game("It's a draw!")
+        return True
+
+    return False
+
+def end_game(message):
+    messagebox.showinfo("Game Over", message)
+    status_label.config(text="Game Over", bg='yellow')
+    for r in range(3):
+        for c in range(3):
+            buttons[r][c].config(state="disabled")
+    x_button.config(state="disabled")
+    o_button.config(state="disabled")
+
+# ---- GUI Setup ----
+root = tk.Tk()
+root.title("TTT Algorithm")
+
+# Status label (single instance!)
+status_label = tk.Label(root, text="Welcome to Tic Tac Toe", bg='lightgreen', font=("Helvetica", 14))
+status_label.grid(row=0, column=0, columnspan=3, pady=(10, 2))
+
+# Game grid (3x3)
+buttons = [[None for _ in range(3)] for _ in range(3)]
+for r in range(3):
+    for c in range(3):
+        buttons[r][c] = tk.Button(root, text="", font=("Helvetica", 32), width=5, height=2)
+        buttons[r][c].grid(row=r + 1, column=c)
+
+# Control buttons
+x_button = tk.Button(root, text="Robot 1", font=("Helvetica", 16), command=lambda: play_X("X"))
+x_button.grid(row=4, column=0)
+
+tk.Label(root, text=" ").grid(row=4, column=1)  # spacer
+
+o_button = tk.Button(root, text="Robot 2", font=("Helvetica", 16), command=lambda: play_O("O"))
+o_button.grid(row=4, column=2)
+# o_button.config(state="disabled")
+
+root.mainloop()
+if __name__ == "__main__":
+    robot = Dorna()
+    robot.connect(host="localhost", port=443)
+    main(robot)
+    robot.close()
