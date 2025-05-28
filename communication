@@ -18,6 +18,7 @@ def main(robot):
             robot.set_output(index=1, val=0)
             robot.set_output(index=2, val=0)
             robot.set_output(index=3, val=0)
+            play_O("O")
         else:
             print("wait")
             robot.sleep(val=5)
@@ -116,9 +117,9 @@ def square(r,c):
     elif (r==2 and c==0):
         return 7
     elif (r==2 and c==1):
-        return 2
+        return 8
     elif (r==2 and c==2):
-        return 2
+        return 9
     
 first_move_done = False
 second_move_done = False
@@ -152,7 +153,28 @@ def play_X(player):
                     o_button.config(state="normal")
 
                     return
-
+              
+def play_O(player):
+	robot2 = recieve()
+    if (robot2 == 1):
+        buttons[0][0]["text"] = player
+    elif (robot2 == 2):
+        buttons[0][1]["text"] = player
+    elif (robot2 == 3):
+        buttons[0][2]["text"] = player
+    elif (robot2 == 4):
+        buttons[1][0]["text"] = player
+    elif (robot2 == 5):
+        buttons[1][1]["text"] = player
+    elif (robot2 == 6):
+        buttons[1][2]["text"] = player
+    elif (robot2 == 7):
+        buttons[2][0]["text"] = player
+    elif (robot2 == 8):
+        buttons[2][1]["text"] = player
+    elif (robot2 == 9):
+        buttons[2][2]["text"] = player
+'''
 def play_O(player):
     status_label.config(text="O's Turn", bg='red')
     available_moves = [(r, c) for r in range(3) for c in range(3) if buttons[r][c]["text"] == ""]
@@ -164,7 +186,7 @@ def play_O(player):
         
         if not check_game_over():
             x_button.config(state="normal")
-
+'''
 def check_game_over():
     for i in range(3):
         if buttons[i][0]["text"] != "" and buttons[i][0]["text"] == buttons[i][1]["text"] == buttons[i][2]["text"]:
