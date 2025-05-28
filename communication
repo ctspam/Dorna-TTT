@@ -11,10 +11,8 @@ def main(robot):
         if (robot.get_all_input()[0:4] != [0,0,0,0]):
             turn = True
         if (turn):
-            robot2 = recieve()
-            print(robot2)
-            #algorithm
-            #movement(best position)
+            #robot2 = recieve()
+            play_X("X")
             turn = False
             robot.set_output(index=0, val=0)
             robot.set_output(index=1, val=0)
@@ -22,7 +20,7 @@ def main(robot):
             robot.set_output(index=3, val=0)
         else:
             print("wait")
-            robot.sleep(val=1)
+            robot.sleep(val=5)
         break
 
 def recieve():
@@ -102,7 +100,26 @@ def movement(move):
     	robot.set_output(index=1, val=0)
     	robot.set_output(index=2, val=0)
     	robot.set_output(index=3, val=1)
-        
+def square(r,c):
+    if (r==0 and c==0):
+        return 1
+    elif (r==0 and c==1):
+        return 2
+    elif (r==0 and c==2):
+        return 3
+    elif (r==1 and c==0):
+        return 4
+    elif (r==1 and c==1):
+        return 5
+    elif (r==1 and c==2):
+        return 6
+    elif (r==2 and c==0):
+        return 7
+    elif (r==2 and c==1):
+        return 2
+    elif (r==2 and c==2):
+        return 2
+    
 first_move_done = False
 second_move_done = False
 player_X_turn = True
@@ -115,6 +132,7 @@ def play_X(player):
     if not first_move_done:
         if buttons[1][1]["text"] == "":
             buttons[1][1]["text"] = "X"
+            movement(5) #center
             first_move_done = True
             if check_game_over():
                 return
@@ -127,6 +145,7 @@ def play_X(player):
             for c in range(3):
                 if buttons[r][c]["text"] == "":
                     buttons[r][c]["text"] = player
+                    movement(square(r,c))
                     if check_game_over():
                         return
                     root.after(500, lambda: play_O("O"))
@@ -142,6 +161,7 @@ def play_O(player):
     if available_moves:
         r, c = random.choice(available_moves)
         buttons[r][c]["text"] = "O"
+        
         if not check_game_over():
             x_button.config(state="normal")
 
